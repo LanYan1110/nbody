@@ -8,11 +8,14 @@
 # 2to3
 # modified by Andriy Misyura
 # slightly modified by bmmeijers
+#slightly modified by Lan Yan,Louis Dechamps
 
 import sys
 from math import sqrt, pi as PI
+import csv
+import time
 
-
+#Generate all possible pairs
 def combinations(l):
     result = []
     for x in range(len(l) - 1):
@@ -70,7 +73,13 @@ PAIRS = tuple(combinations(SYSTEM))
 
 
 def advance(dt, n, bodies=SYSTEM, pairs=PAIRS):
+
+    with open("nbody_py.csv", 'a') as fout:
+        writer = csv.writer(fout, delimiter=';')
+        writer.writerow(["name of the body", "position x", "position y", "position z"])
+
     for i in range(n):
+        #calculate Forces
         for ([x1, y1, z1], v1, m1, [x2, y2, z2], v2, m2) in pairs:
             dx = x1 - x2
             dy = y1 - y2
@@ -79,29 +88,44 @@ def advance(dt, n, bodies=SYSTEM, pairs=PAIRS):
             mag = dt / (dist * dist * dist)
             b1m = m1 * mag
             b2m = m2 * mag
+        #Update Velocties
             v1[0] -= dx * b2m
             v1[1] -= dy * b2m
             v1[2] -= dz * b2m
             v2[2] += dz * b1m
             v2[1] += dy * b1m
             v2[0] += dx * b1m
+        #update positions
         for (r, [vx, vy, vz], m) in bodies:
             r[0] += dt * vx
             r[1] += dt * vy
             r[2] += dt * vz
 
+            fout=open('nbody_py.csv','a')
+            writer=csv.writer(fout,delimiter=';')
+            name_list=list(BODIES.keys())
+            position =bodies.index((r, [vx, vy, vz], m))
+            name=name_list[position]
+            writer.writerow([name, r[0], r[1], r[2]])
+            fout.close()
+
+
+
+
 
 def report_energy(bodies=SYSTEM, pairs=PAIRS, e=0.0):
+    # Gravitational energy
     for ((x1, y1, z1), v1, m1, (x2, y2, z2), v2, m2) in pairs:
         dx = x1 - x2
         dy = y1 - y2
         dz = z1 - z2
         e -= (m1 * m2) / ((dx * dx + dy * dy + dz * dz) ** 0.5)
+    # Kinetic energy
     for (r, [vx, vy, vz], m) in bodies:
         e += m * (vx * vx + vy * vy + vz * vz) / 2.0
     print("Energy: %.9f" % e)
 
-
+# calculate each body's momentum
 def offset_momentum(ref, bodies=SYSTEM, px=0.0, py=0.0, pz=0.0):
     for (r, [vx, vy, vz], m) in bodies:
         px -= vx * m
@@ -118,6 +142,7 @@ def main(n, ref="sun"):
     report_energy()
     advance(0.01, n)
     report_energy()
+    print(f'The execution time is {time.perf_counter()}s\n')
 
 
 if __name__ == "__main__":
@@ -129,3 +154,4 @@ if __name__ == "__main__":
         print("Call this program with an integer as program argument")
         print("(to set the number of iterations for the n-body simulation).")
         sys.exit(1)
+

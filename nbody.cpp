@@ -10,9 +10,11 @@
    contributed by cvergu
    slightly modified by bmmeijers
 */
-
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <iostream>
+#include <fstream>
+#include <chrono>
 
 
 // these values are constant and not allowed to be changed
@@ -125,14 +127,26 @@ void advance(body state[BODIES_COUNT], double dt) {
             state[i].velocity -= dist * (state[j].mass * mag);
             state[j].velocity += dist * (state[i].mass * mag);
         }
-    }
 
+    }
     /*
      * Compute the new positions
      */
     for (unsigned int i = 0; i < BODIES_COUNT; ++i) {
         state[i].position += state[i].velocity * dt;
     }
+
+    for (unsigned int i = 0; i < BODIES_COUNT; ++i)
+    {
+        std::fstream fout;
+        fout.open("nbody_cpp.csv",std::fstream::app);
+        fout <<state[i].name<< ";"
+             <<state[i].position.x<< ";"
+             <<state[i].position.y<< ";"
+             <<state[i].position.z<< ";"
+             << "\n";
+    }
+
 }
 
 void offset_momentum(body state[BODIES_COUNT]) {
@@ -239,6 +253,7 @@ body state[] = {
 
 
 int main(int argc, char **argv) {
+    auto begin = std::chrono::steady_clock::now();
     if (argc != 2) {
         std::cout << "This is " << argv[0] << std::endl;
         std::cout << "Call this program with an integer as program argument" << std::endl;
@@ -248,10 +263,25 @@ int main(int argc, char **argv) {
         const unsigned int n = atoi(argv[1]);
         offset_momentum(state);
         std::cout << energy(state) << std::endl;
+        std::fstream fout;
+        fout.open("nbody_cpp.csv",std::fstream::app);
+        fout <<"name of the body"<< ";"
+             <<"position x"<< ";"
+             <<"position y"<< ";"
+             <<"position z"<< ";"
+             << "\n";
+        fout.close();
         for (int i = 0; i < n; ++i) {
             advance(state, 0.01);
+
         }
         std::cout << energy(state) << std::endl;
+        auto end = std::chrono::steady_clock::now();
+        std::cout << "The execution time is "
+             << std::chrono::duration_cast<std::chrono::seconds>(end - begin).count()
+             << "s";
         return EXIT_SUCCESS;
+
     }
 }
+
