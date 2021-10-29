@@ -277,7 +277,7 @@ int main(int argc, char **argv) {
         }
         std::cout << energy(state) << std::endl;
         auto end = std::chrono::steady_clock::now();
-        std::cout << "The execution time is "
+        std::cout << "The c++ running time is "
              << std::chrono::duration_cast<std::chrono::seconds>(end - begin).count()
              << "s";
         return EXIT_SUCCESS;
