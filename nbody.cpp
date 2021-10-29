@@ -9,6 +9,7 @@
    
    contributed by cvergu
    slightly modified by bmmeijers
+   slightly modified by Lan Yan, Louis Dechamps
 */
 #define _USE_MATH_DEFINES
 #include <cmath>
