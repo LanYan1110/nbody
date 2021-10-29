@@ -142,7 +142,7 @@ def main(n, ref="sun"):
     report_energy()
     advance(0.01, n)
     report_energy()
-    print(f'The execution time is {time.perf_counter()}s\n')
+    print(f'The Python Running time is {time.perf_counter()}s\n')
 
 
 if __name__ == "__main__":
