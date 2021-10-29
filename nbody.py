@@ -8,7 +8,7 @@
 # 2to3
 # modified by Andriy Misyura
 # slightly modified by bmmeijers
-#slightly modified by Lan Yan,Louis Dechamps for Python Assignments
+#slightly modified by Lan Yan,Louis Dechamps 
 
 import sys
 from math import sqrt, pi as PI
